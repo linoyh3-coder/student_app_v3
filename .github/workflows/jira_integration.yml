@@ -8,10 +8,6 @@ jobs:
   test-and-report:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: student_app_v3
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,11 +19,19 @@ jobs:
         run: uv python install 3.9
 
       - name: Install dependencies
+        working-directory: student_app_v3
         run: uv sync --frozen
 
       - name: Run Tests
-        run: uv run pytest --junitxml=report.xml
+        working-directory: student_app_v3
+        run: PYTHONPATH=. uv run pytest --junitxml=report.xml
         continue-on-error: true
+
+      - name: Upload test results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: student_app_v3/report.xml
 
       - name: Report Results to Jira (Xray)
         uses: mikepenz/xray-action@v3
@@ -35,5 +39,5 @@ jobs:
           username: ${{ secrets.XRAY_CLIENT_ID }}
           password: ${{ secrets.XRAY_CLIENT_SECRET }}
           testFormat: 'junit'
-          testPaths: 'report.xml'
+          testPaths: 'student_app_v3/report.xml'
           projectKey: 'SAV'
