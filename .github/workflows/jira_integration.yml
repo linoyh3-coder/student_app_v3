@@ -27,7 +27,7 @@ jobs:
         run: PYTHONPATH=. uv run pytest --junitxml=report.xml
         continue-on-error: true
 
-      - name: Debug (optional)
+      - name: Debug files
         run: ls -R student_app_v3
 
       - name: Report Results to Jira (Xray)
@@ -38,4 +38,4 @@ jobs:
           testFormat: 'junit'
           testPaths: 'student_app_v3/report.xml'
           projectKey: 'SAV'
-          baseUrl: https://xray.cloud.getxray.app
+          xrayCloud: true
