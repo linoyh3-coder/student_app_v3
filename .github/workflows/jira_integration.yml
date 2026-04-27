@@ -27,36 +27,8 @@ jobs:
         run: PYTHONPATH=. uv run pytest --junitxml=report.xml
         continue-on-error: true
 
-      # 🔥 Detect Xray region automatically (US / EU)
-      - name: Detect Xray Region
-        id: xray_region
-        run: |
-          echo "Checking Xray US region..."
-
-          US_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://xray.cloud.getxray.app/api/v2/authenticate)
-
-          if [ "$US_STATUS" = "200" ]; then
-            echo "XRAY_BASE_URL=https://xray.cloud.getxray.app" >> $GITHUB_ENV
-            echo "✅ Using US region"
-          else
-            echo "Checking Xray EU region..."
-
-            EU_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://eu.xray.cloud.getxray.app/api/v2/authenticate)
-
-            if [ "$EU_STATUS" = "200" ]; then
-              echo "XRAY_BASE_URL=https://eu.xray.cloud.getxray.app" >> $GITHUB_ENV
-              echo "✅ Using EU region"
-            else
-              echo "❌ No valid Xray region found"
-              exit 1
-            fi
-          fi
-
-      - name: Upload test report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-report
-          path: student_app_v3/report.xml
+      - name: Debug (optional)
+        run: ls -R student_app_v3
 
       - name: Report Results to Jira (Xray)
         uses: mikepenz/xray-action@v3
@@ -66,4 +38,4 @@ jobs:
           testFormat: 'junit'
           testPaths: 'student_app_v3/report.xml'
           projectKey: 'SAV'
-          baseUrl: ${{ env.XRAY_BASE_URL }}
+          baseUrl: https://xray.cloud.getxray.app
