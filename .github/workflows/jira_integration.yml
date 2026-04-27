@@ -8,6 +8,10 @@ jobs:
   test-and-report:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: student_app_v3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,10 +23,10 @@ jobs:
         run: uv python install 3.9
 
       - name: Install dependencies
-        run: cd student_app_v3/student_app_v3 && uv sync --frozen
+        run: uv sync --frozen
 
       - name: Run Tests
-        run: cd student_app_v3/student_app_v3 && uv run pytest --junitxml=report.xml
+        run: uv run pytest --junitxml=report.xml
         continue-on-error: true
 
       - name: Report Results to Jira (Xray)
